@@ -1,0 +1,140 @@
+<?php namespace Knovators\LaravelModelCaching\Tests\Integration\CachedBuilder;
+
+use Knovators\LaravelModelCaching\Tests\Fixtures\Author;
+use Knovators\LaravelModelCaching\Tests\Fixtures\Book;
+use Knovators\LaravelModelCaching\Tests\Fixtures\UncachedAuthor;
+use Knovators\LaravelModelCaching\Tests\Fixtures\UncachedBook;
+use Knovators\LaravelModelCaching\Tests\IntegrationTestCase;
+
+class WhereRawTest extends IntegrationTestCase
+{
+    public function testRawWhereClauseParsing()
+    {
+        $authors = collect([(new Author)
+            ->whereRaw('name <> \'\'')
+            ->first()]);
+
+        $key = sha1("knovators:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:knovatorslaravelmodelcachingtestsfixturesauthor-_and_name_<>_''-authors.deleted_at_null-first");
+        $tags = ["knovators:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:knovatorslaravelmodelcachingtestsfixturesauthor"];
+
+        $cachedResults = collect([$this->cache()->tags($tags)->get($key)['value']]);
+
+        $liveResults = collect([(new UncachedAuthor)
+            ->whereRaw('name <> \'\'')->first()]);
+
+        $this->assertTrue($authors->diffKeys($cachedResults)->isEmpty());
+        $this->assertTrue($liveResults->diffKeys($cachedResults)->isEmpty());
+    }
+
+    public function testWhereRawWithQueryParameters()
+    {
+        $authorName = (new Author)->first()->name;
+        $authors = (new Author)
+            ->where("name", "!=", "test")
+            ->whereRaw("name != 'test3'")
+            ->whereRaw('name = ? AND name != ?', [$authorName, "test2"])
+            ->get();
+        $key = sha1("knovators:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:authors:knovatorslaravelmodelcachingtestsfixturesauthor-name_!=_test-_and_name_!=_'test3'-_and_name_=_" . str_replace(" ", "_", $authorName) . "__AND_name_!=_test2-authors.deleted_at_null");
+        $tags = ["knovators:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:knovatorslaravelmodelcachingtestsfixturesauthor"];
+
+        $cachedResults = collect([$this->cache()->tags($tags)->get($key)['value']]);
+        $liveResults = (new UncachedAuthor)
+            ->where("name", "!=", "test")
+            ->whereRaw("name != 'test3'")
+            ->whereRaw('name = ? AND name != ?', [$authorName, "test2"])
+            ->get();
+
+        $this->assertTrue($authors->diffKeys($cachedResults)->isEmpty());
+        $this->assertTrue($liveResults->diffKeys($cachedResults)->isEmpty());
+    }
+
+    public function testMultipleWhereRawCacheUniquely()
+    {
+        $book1 = (new UncachedBook)->first();
+        $book2 = (new UncachedBook)->orderBy("id", "DESC")->first();
+        $cachedBook1 = (new Book)->whereRaw('title = ?', [$book1->title])->first();
+        $cachedBook2 = (new Book)->whereRaw('title = ?', [$book2->title])->first();
+
+        $this->assertEquals($cachedBook1->title, $book1->title);
+        $this->assertEquals($cachedBook2->title, $book2->title);
+    }
+
+    public function testNestedWhereRawClauses()
+    {
+        $expectedIds = [
+            1,
+            2,
+            3,
+            5,
+            6,
+        ];
+
+        $authors = (new Author)
+            ->where(function ($query) {
+                $query->orWhereRaw("id BETWEEN 1 AND 3")
+                    ->orWhereRaw("id BETWEEN 5 AND 6");
+            })
+            ->get();
+
+        $this->assertEquals($expectedIds, $authors->pluck("id")->toArray());
+    }
+
+    public function testNestedWhereRawWithBindings()
+    {
+        $books = (new Book)
+            ->where(function ($query) {
+                $query->whereRaw("title like ? or description like ? or published_at like ? or price like ?", ['%larravel%', '%larravel%', '%larravel%', '%larravel%',]);
+            })->get();
+
+        $uncachedBooks = (new UncachedBook)
+            ->where(function ($query) {
+                $query->whereRaw("title like ? or description like ? or published_at like ? or price like ?", ['%larravel%', '%larravel%', '%larravel%', '%larravel%',]);
+            })->get();
+
+        $this->assertEquals($books->pluck("id"), $uncachedBooks->pluck("id"));
+    }
+
+    public function testWhereRawParametersCacheUniquely()
+    {
+        $book1 = (new UncachedBook)->first();
+        $book2 = (new UncachedBook)->orderBy("id", "DESC")->first();
+
+        $result1 = (new Book)
+            ->whereRaw("id = ?", [$book1->id])
+            ->get();
+        $result2 = (new Book)
+            ->whereRaw("id = ?", [$book2->id])
+            ->get();
+        $key1 = sha1("knovators:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:knovatorslaravelmodelcachingtestsfixturesbook-_and_id_=_{$book1->id}");
+        $key2 = sha1("knovators:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:knovatorslaravelmodelcachingtestsfixturesbook-_and_id_=_{$book2->id}");
+        $tags = ["knovators:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:knovatorslaravelmodelcachingtestsfixturesbook"];
+        $cachedBook1 = $this->cache()->tags($tags)->get($key1)['value'];
+        $cachedBook2 = $this->cache()->tags($tags)->get($key2)['value'];
+
+        $this->assertEquals($cachedBook1->first()->title, $result1->first()->title);
+        $this->assertEquals($cachedBook2->first()->title, $result2->first()->title);
+    }
+
+    public function testWhereRawParametersAfterWhereClause()
+    {
+        $book1 = (new UncachedBook)->first();
+        $book2 = (new UncachedBook)->orderBy("id", "DESC")->first();
+
+        $result1 = (new Book)
+            ->where("id", ">", 0)
+            ->whereRaw("id = ?", [$book1->id])
+            ->get();
+        $result2 = (new Book)
+            ->where("id", ">", 1)
+            ->whereRaw("id = ?", [$book2->id])
+            ->get();
+        $key1 = sha1("knovators:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:knovatorslaravelmodelcachingtestsfixturesbook-id_>_0-_and_id_=_{$book1->id}");
+        $key2 = sha1("knovators:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:books:knovatorslaravelmodelcachingtestsfixturesbook-id_>_1-_and_id_=_{$book2->id}");
+        $tags = ["knovators:laravel-model-caching:testing:{$this->testingSqlitePath}testing.sqlite:knovatorslaravelmodelcachingtestsfixturesbook"];
+        $cachedBook1 = $this->cache()->tags($tags)->get($key1)['value'];
+        $cachedBook2 = $this->cache()->tags($tags)->get($key2)['value'];
+
+        $this->assertEquals($cachedBook1->first()->title, $result1->first()->title);
+        $this->assertEquals($cachedBook2->first()->title, $result2->first()->title);
+    }
+}
