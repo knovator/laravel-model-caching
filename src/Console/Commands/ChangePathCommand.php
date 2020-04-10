@@ -55,15 +55,16 @@ class ChangePathCommand extends Command
      */
     public function handle() {
         foreach ($this->paths as $path) {
-            if (File::isDirectory($path) && strpos('Commands', $path) !== false) {
+            if (File::isDirectory($path)) {
                 $files = File::allfiles($path);
                 foreach ($files as $filename) {
-                    $str = file_get_contents($filename);
-                    $str = str_replace($this->laravelModel, $this->mongoModel, $str);
-                    $str = str_replace($this->laravelBuilder, $this->mongoBuilder, $str);
-                    $str = str_replace($this->laravelRelation, $this->mongoRelation, $str);
-                    file_put_contents($filename, $str);
-
+                    if (strpos('Commands', $filename) !== false) {
+                        $str = file_get_contents($filename);
+                        $str = str_replace($this->laravelModel, $this->mongoModel, $str);
+                        $str = str_replace($this->laravelBuilder, $this->mongoBuilder, $str);
+                        $str = str_replace($this->laravelRelation, $this->mongoRelation, $str);
+                        file_put_contents($filename, $str);
+                    }
                 }
             }
         }
