@@ -48,17 +48,12 @@ class ChangePathCommand extends Command
         parent::__construct();
     }
 
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
     public function handle() {
         foreach ($this->paths as $path) {
             if (File::isDirectory($path)) {
                 $files = File::allfiles($path);
                 foreach ($files as $filename) {
-                    if (strpos('Commands', $filename) !== false) {
+                    if (strpos('Commands', $filename->getRealPath()) !== false) {
                         $str = file_get_contents($filename);
                         $str = str_replace($this->laravelModel, $this->mongoModel, $str);
                         $str = str_replace($this->laravelBuilder, $this->mongoBuilder, $str);
