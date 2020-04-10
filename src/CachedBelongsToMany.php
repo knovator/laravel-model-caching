@@ -1,6 +1,6 @@
 <?php namespace Knovators\LaravelModelCaching;
 
-use Knovators\LaravelPivotEvents\Traits\FiresPivotEventsTrait;
+use Knovators\LaravelModelCaching\Traits\LaravelPivotEvents\FiresPivotEventsTrait;
 use Knovators\LaravelModelCaching\Traits\Buildable;
 use Knovators\LaravelModelCaching\Traits\BuilderCaching;
 use Knovators\LaravelModelCaching\Traits\Caching;

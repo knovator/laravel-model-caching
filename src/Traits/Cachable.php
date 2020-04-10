@@ -1,7 +1,11 @@
 <?php namespace Knovators\LaravelModelCaching\Traits;
 
-use Knovators\LaravelPivotEvents\Traits\PivotEventTrait;
+use Knovators\LaravelModelCaching\Traits\LaravelPivotEvents\PivotEventTrait;
 
+/**
+ * Trait Cachable
+ * @package Knovators\LaravelModelCaching\Traits
+ */
 trait Cachable
 {
     use Caching;

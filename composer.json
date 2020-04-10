@@ -4,13 +4,12 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Mike Bronner",
-            "email": "hello@knovators.com"
+            "name": "Priyanka patel",
+            "email": "priyankapatel@knovators.in"
         }
     ],
     "require": {
         "php": ">=7.2.5",
-        "knovators/laravel-pivot-events": "^0.3.0",
         "illuminate/cache": "^7.0",
         "illuminate/config": "^7.0",
         "illuminate/console": "^7.0",
