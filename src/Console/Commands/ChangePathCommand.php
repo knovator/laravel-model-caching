@@ -55,7 +55,7 @@ class ChangePathCommand extends Command
      */
     public function handle() {
         foreach ($this->paths as $path) {
-            if (File::isDirectory($path)) {
+            if (File::isDirectory($path) && strpos('Commands', $path) !== false) {
                 $files = File::allfiles($path);
                 foreach ($files as $filename) {
                     $str = file_get_contents($filename);
