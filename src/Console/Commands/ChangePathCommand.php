@@ -30,7 +30,7 @@ class ChangePathCommand extends Command
     protected $mongoRelation = 'Jenssegers\Mongodb\Relations';
     protected $mongoBuilder = 'Jenssegers\Mongodb\Query\Builder';
     protected $laravelModel = 'Illuminate\Database\Eloquent\Model';
-    protected $laravelRelation = 'Illuminate\Database\Eloquent\Model';
+    protected $laravelRelation = 'Illuminate\Database\Eloquent\Relations';
     protected $laravelBuilder = 'Illuminate\Database\Eloquent\Builder';
     protected $paths = [
         'vendor/knovators/laravel-model-caching/src',
@@ -53,7 +53,7 @@ class ChangePathCommand extends Command
             if (File::isDirectory($path)) {
                 $files = File::allfiles($path);
                 foreach ($files as $filename) {
-                    if (strpos('Commands', $filename->getRealPath()) !== false) {
+                    if ($filename->getFilename() !== "ChangePathCommand.php") {
                         $str = file_get_contents($filename);
                         $str = str_replace($this->laravelModel, $this->mongoModel, $str);
                         $str = str_replace($this->laravelBuilder, $this->mongoBuilder, $str);
