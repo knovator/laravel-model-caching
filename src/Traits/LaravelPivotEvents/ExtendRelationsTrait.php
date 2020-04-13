@@ -15,8 +15,8 @@ trait ExtendRelationsTrait
 {
 
     protected function newMorphToMany(
-        Builder $query,
-        Model $parent,c
+        $query,
+        $parent,
         $name,
         $table,
         $foreignPivotKey,
@@ -32,8 +32,8 @@ trait ExtendRelationsTrait
     }
 
     protected function newBelongsToMany(
-        Builder $query,
-        Model $parent,
+        $query,
+        $parent,
         $table,
         $foreignPivotKey,
         $relatedPivotKey,

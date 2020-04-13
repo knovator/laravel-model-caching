@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
 
+/**
+ * Trait ModelCaching
+ * @package Knovators\LaravelModelCaching\Traits
+ */
 trait ModelCaching
 {
     public function __get($key)
@@ -109,8 +113,8 @@ trait ModelCaching
     }
 
     protected function newBelongsToMany(
-        EloquentBuilder $query,
-        Model $parent,
+        $query,
+        $parent,
         $table,
         $foreignPivotKey,
         $relatedPivotKey,
