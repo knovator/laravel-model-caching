@@ -28,10 +28,12 @@ class ChangePathCommand extends Command
     protected $description = 'Command description';
     protected $mongoModel = 'Jenssegers\Mongodb\Eloquent\Model';
     protected $mongoRelation = 'Jenssegers\Mongodb\Relations';
-    protected $mongoBuilder = 'Jenssegers\Mongodb\Query\Builder';
+    protected $mongoQueryBuilder = 'Jenssegers\Mongodb\Query\Builder';
+    protected $mongoBuilder = 'Jenssegers\Mongodb\Eloquent\Builder';
     protected $laravelModel = 'Illuminate\Database\Eloquent\Model';
     protected $laravelRelation = 'Illuminate\Database\Eloquent\Relations';
     protected $laravelBuilder = 'Illuminate\Database\Eloquent\Builder';
+    protected $laravelQueryBuilder = 'Illuminate\Database\Query\Builder';
     protected $paths = [
         'vendor/knovators/laravel-model-caching/src',
         'vendor/knovators/laravel-model-caching/src/Relations',
@@ -58,6 +60,8 @@ class ChangePathCommand extends Command
                         $str = str_replace($this->laravelModel, $this->mongoModel, $str);
                         $str = str_replace($this->laravelBuilder, $this->mongoBuilder, $str);
                         $str = str_replace($this->laravelRelation, $this->mongoRelation, $str);
+                        $str = str_replace($this->laravelQueryBuilder, $this->mongoQueryBuilder,
+                            $str);
                         file_put_contents($filename, $str);
                     }
                 }
