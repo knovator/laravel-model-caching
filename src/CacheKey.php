@@ -393,11 +393,14 @@ class CacheKey
 
         return $orders
             ->reduce(function ($carry, $order) {
-                if (($order["type"] ?? "") === "Raw") {
-                    return $carry . "_orderByRaw_" . (new Str)->slug($order["sql"]);
+                if (is_array($order)) {
+                    if (($order["type"] ?? "") === "Raw") {
+                        return $carry . "_orderByRaw_" . (new Str)->slug($order["sql"]);
+                    }
+                    return $carry . "_orderBy_" . $order["column"] . "_" . $order["direction"];
                 }
 
-                return $carry . "_orderBy_" . $order["column"] . "_" . $order["direction"];
+                return $carry;
             })
             ?: "";
     }

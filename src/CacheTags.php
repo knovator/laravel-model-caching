@@ -54,7 +54,7 @@ class CacheTags
         return $tags;
     }
 
-    protected function getRelation(string $relationName) : Relation {
+    protected function getRelation(string $relationName) {
         return collect(explode('.', $relationName))
             ->reduce(function ($carry, $name) {
                 $carry = $carry ?: $this->model;
@@ -68,7 +68,7 @@ class CacheTags
      * @param $carry
      * @return Model
      */
-    protected function getRelatedModel($carry) : Model {
+    protected function getRelatedModel($carry) {
         if ($carry instanceof Relation) {
             return $carry->getQuery()->getModel();
         }

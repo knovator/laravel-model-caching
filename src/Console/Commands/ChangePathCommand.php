@@ -35,10 +35,7 @@ class ChangePathCommand extends Command
     protected $laravelBuilder = 'Illuminate\Database\Eloquent\Builder';
     protected $laravelQueryBuilder = 'Illuminate\Database\Query\Builder';
     protected $paths = [
-        'vendor/knovators/laravel-model-caching/src',
-        'vendor/knovators/laravel-model-caching/src/Relations',
-        'vendor/knovators/laravel-model-caching/src/Traits',
-        'vendor/knovators/laravel-model-caching/src/Traits/LaravelPivotEvents',
+        'vendor/knovators/laravel-model-caching/src'
     ];
 
     /**
