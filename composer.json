@@ -1,5 +1,5 @@
 {
-    "name": "knovators/laravel-model-caching",
+    "name": "knovator/laravel-model-caching",
     "description": "Automatic caching for Eloquent models.",
     "license": "MIT",
     "authors": [
@@ -10,7 +10,7 @@
     ],
     "require": {
         "php": ">=7.2.5",
-        "knovators/laravel-pivot-events": "^0.3.0",
+        "knovator/laravel-pivot-events": "^0.3.0",
         "illuminate/cache": "^7.0",
         "illuminate/config": "^7.0",
         "illuminate/console": "^7.0",
@@ -33,7 +33,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Knovators\\LaravelModelCaching\\": "src/"
+            "Knovator\\LaravelModelCaching\\": "src/"
         }
     },
     "autoload-dev": {
@@ -42,13 +42,13 @@
             "tests/database/seeds"
         ],
         "psr-4": {
-            "Knovators\\LaravelModelCaching\\Tests\\": "tests/"
+            "Knovator\\LaravelModelCaching\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Knovators\\LaravelModelCaching\\Providers\\Service"
+                "Knovator\\LaravelModelCaching\\Providers\\Service"
             ]
         }
     },
